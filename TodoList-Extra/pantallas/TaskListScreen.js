@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, FlatList, StyleSheet, Text } from 'react-native';
-import TaskInput from '../components/TaskInput';
-import TaskItem from '../components/TaskItem';
+import TaskInput from '../componentes/TaskInput';
+import TaskItem from '../componentes/TaskItem';
 
 export const TaskListScreen = () => {
   const [tasks, setTasks] = useState([]);
@@ -9,8 +9,16 @@ export const TaskListScreen = () => {
   const addTask = (task) => {
     setTasks((currentTasks) => [
       ...currentTasks,
-      { id: Date.now().toString(), text: task },
+      { id: Date.now().toString(), text: task, completed: false },
     ]);
+  };
+
+  const toggleTaskCompletion = (taskId) => {
+    setTasks((currentTasks) =>
+      currentTasks.map((task) =>
+        task.id === taskId ? { ...task, completed: !task.completed } : task
+      )
+    );
   };
 
   const deleteTask = (taskId) => {
@@ -21,12 +29,17 @@ export const TaskListScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Todo List App</Text>
       <TaskInput onAddTask={addTask} />
       <FlatList
         data={tasks}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <TaskItem task={item} onDelete={deleteTask} />
+          <TaskItem
+            task={item}
+            onToggleCompletion={toggleTaskCompletion}
+            onDelete={deleteTask}
+          />
         )}
       />
     </View>
@@ -36,7 +49,13 @@ export const TaskListScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 40,
     backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
   },
 });
